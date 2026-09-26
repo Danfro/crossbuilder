@@ -381,7 +381,7 @@ config_container_dir_mount () {
 }
 
 start_container () {
-    STATUS=$(lxc query "/1.0/containers/${LXD_CONTAINER}/state" | \
+    STATUS=$(lxc query "/1.0/instances/${LXD_CONTAINER}/state" | \
                 jq --raw-output '.status')
     if [ $STATUS = 'Stopped' ]; then
         # lxc start may give a failure code. It also may not, so we check
@@ -395,7 +395,7 @@ start_container () {
     # Unfortunately we need to check again. We check for Started this time
     # because the monitor may be hung with the container failing, which will
     # give us much different output
-    STATUS=$(lxc query "/1.0/containers/${LXD_CONTAINER}/state" | \
+    STATUS=$(lxc query "/1.0/instances/${LXD_CONTAINER}/state" | \
                 jq --raw-output '.status')
     if [ "$STATUS" != 'Running' ]; then
         echo $LXD_CONTAINER_FAILURE_MSG
@@ -874,7 +874,7 @@ check_for_container_network() {
     NETWORK_UP=0
     for i in `seq 1 10`
     do
-        if lxc query "/1.0/containers/${LXD_CONTAINER}/state" | \
+        if lxc query "/1.0/instances/${LXD_CONTAINER}/state" | \
                 jq -e '.network.eth0.addresses | any( .family == "inet" )' \
                 > /dev/null 2>&1 ; then
             NETWORK_UP=1
@@ -888,7 +888,7 @@ check_for_container_network() {
         exec_container_root "dhclient"
         for i in `seq 1 10`
         do
-            if lxc query "/1.0/containers/${LXD_CONTAINER}/state" | jq -e '.network.eth0.addresses | any( .family == "inet" )' > /dev/null 2>&1 ; then
+            if lxc query "/1.0/instances/${LXD_CONTAINER}/state" | jq -e '.network.eth0.addresses | any( .family == "inet" )' > /dev/null 2>&1 ; then
                 echo -e "${POSITIVE_COLOR}Container is connected to the Internet.${NC}"
                 NETWORK_UP=1
                 break
