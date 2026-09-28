@@ -109,3 +109,7 @@ likely dpgk is not yet configured to build for cross architecture. You can fix t
 lxc exec CONTAINERNAME -- dpkg --add-architecture arm64
 lxc exec CONTAINERNAME -- apt-get update
 ```
+
+## new keyboard doesn't get installed
+Crossbuilder by default runs `apt-get dist-upgrade` for the build packages. This means only existing packages will be updated with the changes you may have applied.
+When adding an entirely new keyboard, its .deb needs to be installed manually once. Then on recurrent builds it will be updated as well.
