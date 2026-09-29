@@ -63,6 +63,9 @@ Do you use the correct branch? `main` is generally targeting the latest OS versi
 ## install on device fails
 Did you provide the devices lock screen password using the `--password` parameter?
 
+## changes do not appear on my device
+In order to see the changes a restart of Lomiri might be needed.
+
 ## docker
 If docker is running on your system, that may configure iptables forward policy to drop forwards of other devices.
 You can check with:
