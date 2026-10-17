@@ -108,21 +108,21 @@ If the output is
 then you need to fix that. For solutions please see https://canonical.com/lxd/docs/default/howto/network_bridge_firewalld/#prevent-connectivity-issues-with-lxd-and-docker.
 
 ## PACKAGENAME: command not found
+
 The lxc image might be missing the named package.
 Check for the package in the container with
 `lxc exec CONTAINERNAME -- dpkg -l PACKAGENAME`
-If its missing, you can install it with:
-```
-lxc exec CONTAINERNAME -- apt update
-lxc exec CONTAINERNAME -- apt install -y PACKAGENAME
-```
+If a package is missing, you will most likely need to fix it in the projects debian control file.
+
 ## get logs
+
 Crossbuilder doesn't have a verbose parameter, so output isn't always sufficient.
 Some logs can be created like this:
 `bash -x $(which crossbuilder) --lxd-image=ubuntu:24.04 --architecture=arm64 --password=???? 2>&1 | tee crossbuilder.log`
 (adjust parameters according to your command)
 
 ## arch missing for dpgk
+
 If the build brings this error:
 ```
 The package has been created.
@@ -139,5 +139,6 @@ lxc exec CONTAINERNAME -- apt-get update
 ```
 
 ## new keyboard doesn't get installed
+
 Crossbuilder by default runs `apt-get dist-upgrade` for the build packages. This means only existing packages will be updated with the changes you may have applied.
 When adding for instance an entirely new keyboard, its .deb needs to be installed manually once. Then on recurrent builds it will be updated as well.
