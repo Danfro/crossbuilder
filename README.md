@@ -17,36 +17,65 @@ cd yourproject/
 crossbuilder --arch=arm64 --lxd-image=ubuntu:24.04 --password=????
 ```
 
+## architecture
+
 Crossbuilder by default builds for armhf architecture. If a device is connected, it should detect the devices architecture. In case for some reason the architecture needs to be explicitely specified, it can be set like this:
 ```bash
 crossbuilder --architecture=arm64
 ```
 
-To be able to install the deb on the device after building, the devices sudo password needs to be provided:
+## device password
+
+To be able to install the deb on the device after building, the devices sudo password needs to be provided. The build-in parameter option (`crossbuilder --password=PASSWORD`) is NOT RECOMMENDED since this command - including your password - will stay in your shell history.
+
+Rather use env vars either for providing the password or to read it from a file. Crossbuilder supports `DEVICE_PASSWORD` and `DEVICE_PASSWORD_FILE` for this purpose.
+
 ```bash
-crossbuilder --password=PASSWORD
+# provide password for single command
+DEVICE_PASSWORD=0000 crossbuilder
+
+# provide password for shell session
+export DEVICE_PASSWORD=0000
+crossbuilder
 ```
-We can specify specific lxd images for the build process. This can be useful e.g. when building for specific target releases like 20.04. 
+
+The default path, where crossbuilder expects the password file is under `~/.config/crossbuilder/device_password`. You can create a file named `device_password` there with the content `DEVICE_PASSWORD=0000`. Or specify a folder of your choice like this:
+
+```bash
+DEVICE_PASSWORD_FILE=path_to_file crossbuilder
+```
+
+## lxd-image
+
+We can specify specific lxd images for the build process. This can be useful e.g. when building for specific target releases like 24.04. 
 ```bash
 crossbuilder --lxd-image=ubuntu:24.04
 ```
 
 Change a line of code and type crossbuilder again to re-build and re-deploy.
 
+## no deb build
+
 To go even faster, bypass building Debian packages with:
 ```bash
 crossbuilder --no-deb
 ```
+
+## setup lxd
 
 For an even faster LXD setup, resetup LXD using ZFS:
 ```bash
 crossbuilder setup-lxd
 ```
 
+## lxd shell
+
 To enter the LXD container used to build:
 ```bash
 crossbuilder shell
 ```
+
+## ssh
 
 To use ssh instead of adb to deploy, use the ```--ssh``` option. If your device has ssh enabled on address let's say 192.168.0.5, use:
 ```bash
@@ -61,7 +90,7 @@ If crossbuilder fails, check the following:
 Do you use the correct branch? `main` is generally targeting the latest OS version, you might be trying to build for an older version.
 
 ## install on device fails
-Did you provide the devices lock screen password using the `--password` parameter?
+Did you provide the devices lock screen password?
 
 ## changes do not appear on my device
 In order to see the changes a restart of Lomiri might be needed.
@@ -76,11 +105,7 @@ If the output is
 -A FORWARD -j DOCKER-USER
 -A FORWARD -j DOCKER-FORWARD
 ```
-then you need to fix that by running those two commands
-```
-sudo iptables -I FORWARD -i lxdbr0 -j ACCEPT
-sudo iptables -I FORWARD -o lxdbr0 -j ACCEPT
-```
+then you need to fix that. For solutions please see https://canonical.com/lxd/docs/default/howto/network_bridge_firewalld/#prevent-connectivity-issues-with-lxd-and-docker.
 
 ## PACKAGENAME: command not found
 The lxc image might be missing the named package.
@@ -115,4 +140,4 @@ lxc exec CONTAINERNAME -- apt-get update
 
 ## new keyboard doesn't get installed
 Crossbuilder by default runs `apt-get dist-upgrade` for the build packages. This means only existing packages will be updated with the changes you may have applied.
-When adding an entirely new keyboard, its .deb needs to be installed manually once. Then on recurrent builds it will be updated as well.
+When adding for instance an entirely new keyboard, its .deb needs to be installed manually once. Then on recurrent builds it will be updated as well.
